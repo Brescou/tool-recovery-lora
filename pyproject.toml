@@ -20,13 +20,14 @@ dev = [
     "ruff>=0.9",
 ]
 train = [
-    # Install when ready for GPU training (Phase 2+).
-    # "unsloth",
-    # "torch",
-    # "transformers",
-    # "datasets",
-    # "trl",
-    # "peft",
+    "unsloth",
+    "torch",
+    "transformers",
+    "datasets",
+    "trl",
+    "peft",
+    "accelerate",
+    "bitsandbytes",
 ]
 
 [project.urls]
@@ -45,6 +46,11 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 88
 target-version = "py312"
+exclude = [
+    ".venv",
+    "adapters",
+    "unsloth_compiled_cache",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

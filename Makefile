@@ -32,10 +32,10 @@ dataset: ## Generate curated train/val + smoke eval JSONL
 	$(UV) run python scripts/generate_dataset.py
 
 lint: ## Lint with ruff
-	$(UV) run ruff check .
+	$(UV) run ruff check src tests scripts
 
 format: ## Format with ruff
-	$(UV) run ruff format .
+	$(UV) run ruff format src tests scripts
 
 clean: ## Remove caches
 	rm -rf .pytest_cache .ruff_cache **/__pycache__

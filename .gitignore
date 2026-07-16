@@ -22,6 +22,7 @@ adapters/**
 wandb/
 runs/
 outputs/
+unsloth_compiled_cache/
 
 # Raw trace dumps (can be large)
 data/raw/**
