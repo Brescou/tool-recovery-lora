@@ -5,7 +5,7 @@ PYTHON := uv run python
 
 # ─── Phony Targets ───────────────────────────────────────────────────────────
 
-.PHONY: help install test eval eval-live train dataset demo bakeoff lint format clean
+.PHONY: help install test eval eval-live eval-vanilla train dataset demo bakeoff lint format clean
 
 .DEFAULT_GOAL := help
 
@@ -27,6 +27,11 @@ eval: ## Fixture self-check on data/eval/smoke.jsonl (no GPU)
 
 eval-live: ## Live LoRA generation eval on smoke set (GPU + train extra)
 	$(UV) run python scripts/run_eval.py --mode live --out data/eval/live_results.json
+
+eval-vanilla: ## Vanilla base model (no LoRA) on smoke set (GPU)
+	$(UV) run python scripts/run_eval.py --mode live --no-adapter \
+		--model unsloth/Qwen2.5-3B-Instruct \
+		--out data/eval/vanilla_results.json
 
 demo: ## LangGraph recovery demo (GPU + trained adapter)
 	$(UV) run python scripts/run_demo.py --scenario missing_args

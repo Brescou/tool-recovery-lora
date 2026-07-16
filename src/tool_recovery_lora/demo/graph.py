@@ -116,7 +116,7 @@ def run_recovery_demo(
         known = ", ".join(sorted(SCENARIOS))
         raise KeyError(f"unknown scenario {scenario_id!r}; choose from: {known}")
 
-    model, tokenizer = load_infer_model(adapter_dir)
+    model, tokenizer = load_infer_model(adapter_dir=adapter_dir)
     app = build_recovery_graph(model, tokenizer)
     return app.invoke({"scenario_id": scenario_id})
 

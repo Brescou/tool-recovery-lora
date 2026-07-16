@@ -22,6 +22,7 @@ make test
 make dataset
 make eval
 make eval-live
+make eval-vanilla  # base model without LoRA (control)
 make train
 make demo
 make bakeoff   # needs real ANTHROPIC_API_KEY for Claude arm

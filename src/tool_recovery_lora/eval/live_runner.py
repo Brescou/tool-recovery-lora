@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Any
 
 from tool_recovery_lora.data.loader import load_jsonl
-from tool_recovery_lora.eval.infer import generate_completion, load_infer_model
+from tool_recovery_lora.eval.infer import (
+    DEFAULT_BASE_MODEL,
+    generate_completion,
+    load_infer_model,
+)
 from tool_recovery_lora.eval.metrics import score_tool_call
 from tool_recovery_lora.eval.parse import parse_first_tool_call
 from tool_recovery_lora.eval.runner import expected_tool_call
@@ -15,16 +19,20 @@ from tool_recovery_lora.eval.runner import expected_tool_call
 def run_live_eval(
     path: Path,
     *,
-    adapter_dir: Path,
+    adapter_dir: Path | None = None,
+    model_name: str | None = None,
+    no_adapter: bool = False,
     max_seq_length: int = 1024,
     max_new_tokens: int = 256,
     limit: int | None = None,
 ) -> dict[str, Any]:
-    """Generate predictions with the LoRA adapter and score objectively.
+    """Generate predictions and score objectively (LoRA or vanilla base).
 
     Args:
         path: Smoke/eval JSONL.
-        adapter_dir: Trained adapter directory.
+        adapter_dir: Trained adapter directory (LoRA mode).
+        model_name: Hub id for vanilla base model when ``no_adapter``.
+        no_adapter: If True, load ``model_name`` without LoRA weights.
         max_seq_length: Model context.
         max_new_tokens: Generation budget.
         limit: Optional cap on number of examples (debug).
@@ -38,9 +46,23 @@ def run_live_eval(
     if limit is not None:
         examples = examples[:limit]
 
-    model, tokenizer = load_infer_model(
-        adapter_dir, max_seq_length=max_seq_length
-    )
+    if no_adapter:
+        resolved_model = model_name or DEFAULT_BASE_MODEL
+        model, tokenizer = load_infer_model(
+            model_name=resolved_model,
+            max_seq_length=max_seq_length,
+        )
+        model_label = resolved_model
+        adapter_label = None
+    else:
+        if adapter_dir is None:
+            raise ValueError("adapter_dir is required unless no_adapter=True")
+        model, tokenizer = load_infer_model(
+            adapter_dir=adapter_dir,
+            max_seq_length=max_seq_length,
+        )
+        model_label = model_name or DEFAULT_BASE_MODEL
+        adapter_label = str(adapter_dir)
 
     totals = {
         "name_match": 0,
@@ -111,6 +133,8 @@ def run_live_eval(
         "n_recovery": float(totals["n_recovery"]),
         "latency_ms_mean": sum(latencies) / len(latencies),
         "latency_ms_p50": sorted(latencies)[len(latencies) // 2],
-        "adapter_dir": str(adapter_dir),
+        "model_name": model_label,
+        "adapter_dir": adapter_label,
+        "no_adapter": no_adapter,
         "details": details,
     }

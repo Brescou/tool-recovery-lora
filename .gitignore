@@ -26,6 +26,7 @@ unsloth_compiled_cache/
 
 # Eval artifacts
 data/eval/live_results.json
+data/eval/vanilla_results.json
 data/eval/bakeoff/
 
 # Env / IDE

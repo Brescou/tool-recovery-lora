@@ -8,17 +8,25 @@ from typing import Any
 
 from tool_recovery_lora.data.schema import TraceExample
 from tool_recovery_lora.eval.prompt import prompt_hf_messages
+from tool_recovery_lora.train.config import TrainConfig
+
+DEFAULT_BASE_MODEL = TrainConfig().base_model
 
 
 def load_infer_model(
-    adapter_dir: Path,
     *,
+    model_name: str | None = None,
+    adapter_dir: Path | None = None,
     max_seq_length: int = 1024,
 ) -> tuple[Any, Any]:
-    """Load 4-bit base + LoRA adapter for inference.
+    """Load a 4-bit model for inference (base-only or base+LoRA adapter).
 
     Args:
-        adapter_dir: Directory produced by ``make train``.
+        model_name: Hub id for the base model when not using an adapter dir
+            as the primary load path (e.g. ``unsloth/Qwen2.5-3B-Instruct``).
+        adapter_dir: Directory produced by ``make train``. When set alone,
+            Unsloth loads base + adapter from this path. Ignored when
+            ``model_name`` is set without loading adapters (vanilla baseline).
         max_seq_length: Context length.
 
     Returns:
@@ -31,11 +39,17 @@ def load_infer_model(
             "Train/infer deps missing. Install with: uv sync --extra train"
         ) from exc
 
-    if not adapter_dir.is_dir():
-        raise FileNotFoundError(adapter_dir)
+    if model_name:
+        load_name = model_name
+    elif adapter_dir is not None:
+        if not adapter_dir.is_dir():
+            raise FileNotFoundError(adapter_dir)
+        load_name = str(adapter_dir)
+    else:
+        raise ValueError("Provide model_name and/or adapter_dir")
 
     model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=str(adapter_dir),
+        model_name=load_name,
         max_seq_length=max_seq_length,
         dtype=None,
         load_in_4bit=True,
