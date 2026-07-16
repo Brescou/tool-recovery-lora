@@ -49,4 +49,4 @@ Write exports under this repo's `data/raw/` (gitignored). Curate into `data/cura
 
 ## Status
 
-Phase 0: contract only. Stack-side exporter lands when Phase 1 starts.
+Phase 4 demo lives in this repo (`make demo`). Stack-side exporter / pack-as-tool agent node remains optional follow-up.

@@ -44,25 +44,24 @@ def load_infer_model(
     return model, tokenizer
 
 
-def generate_completion(
+def generate_from_hf_messages(
     model: Any,
     tokenizer: Any,
-    example: TraceExample,
+    messages: list[dict[str, Any]],
     *,
     max_new_tokens: int = 256,
 ) -> tuple[str, float]:
-    """Generate an assistant continuation for one eval example.
+    """Generate an assistant continuation from HF chat messages.
 
     Args:
         model: Unsloth/PEFT model in inference mode.
         tokenizer: Matching tokenizer.
-        example: Trace to evaluate.
+        messages: Chat messages (no trailing assistant gold turn).
         max_new_tokens: Generation budget.
 
     Returns:
         ``(decoded_new_text, latency_ms)``.
     """
-    messages = prompt_hf_messages(example)
     prompt = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
@@ -85,3 +84,29 @@ def generate_completion(
     new_tokens = outputs[0][inputs["input_ids"].shape[-1] :]
     text = tokenizer.decode(new_tokens, skip_special_tokens=False)
     return text, latency_ms
+
+
+def generate_completion(
+    model: Any,
+    tokenizer: Any,
+    example: TraceExample,
+    *,
+    max_new_tokens: int = 256,
+) -> tuple[str, float]:
+    """Generate an assistant continuation for one eval example.
+
+    Args:
+        model: Unsloth/PEFT model in inference mode.
+        tokenizer: Matching tokenizer.
+        example: Trace to evaluate.
+        max_new_tokens: Generation budget.
+
+    Returns:
+        ``(decoded_new_text, latency_ms)``.
+    """
+    return generate_from_hf_messages(
+        model,
+        tokenizer,
+        prompt_hf_messages(example),
+        max_new_tokens=max_new_tokens,
+    )

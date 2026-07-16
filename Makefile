@@ -5,7 +5,7 @@ PYTHON := uv run python
 
 # ─── Phony Targets ───────────────────────────────────────────────────────────
 
-.PHONY: help install test eval eval-live train dataset lint format clean
+.PHONY: help install test eval eval-live train dataset demo lint format clean
 
 .DEFAULT_GOAL := help
 
@@ -27,6 +27,9 @@ eval: ## Fixture self-check on data/eval/smoke.jsonl (no GPU)
 
 eval-live: ## Live LoRA generation eval on smoke set (GPU + train extra)
 	$(UV) run python scripts/run_eval.py --mode live --out data/eval/live_results.json
+
+demo: ## LangGraph recovery demo (GPU + trained adapter)
+	$(UV) run python scripts/run_demo.py --scenario missing_args
 
 train: ## Run training stub (requires train extra + GPU for real runs)
 	$(UV) run python scripts/run_train.py
