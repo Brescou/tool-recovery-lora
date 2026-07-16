@@ -5,6 +5,7 @@ from __future__ import annotations
 from tool_recovery_lora.data.schema import Message, ToolCall, TraceExample
 from tool_recovery_lora.eval.parse import (
     parse_first_tool_call,
+    parse_first_tool_call_detailed,
     parse_tool_calls_from_text,
 )
 from tool_recovery_lora.eval.prompt import gold_assistant_index, prompt_messages
@@ -12,7 +13,7 @@ from tool_recovery_lora.eval.prompt import gold_assistant_index, prompt_messages
 
 def test_parse_tool_call_block() -> None:
     text = (
-        'Sure.\n<tool_call>\n'
+        "Sure.\n<tool_call>\n"
         '{"name": "meeting_prep", "arguments": {"company": "Acme", "person": "Jane"}}\n'
         "</tool_call>\n"
     )
@@ -20,9 +21,12 @@ def test_parse_tool_call_block() -> None:
     assert len(calls) == 1
     assert calls[0].name == "meeting_prep"
     assert calls[0].arguments["company"] == "Acme"
+    detailed = parse_first_tool_call_detailed(text)
+    assert detailed is not None
+    assert detailed.args_as_object is True
 
 
-def test_parse_arguments_as_json_string() -> None:
+def test_parse_arguments_as_json_string_still_tolerated() -> None:
     text = (
         '<tool_call>\n{"name": "meeting_prep", '
         '"arguments": "{\\"company\\": \\"Globex\\"}"}\n</tool_call>'
@@ -30,6 +34,9 @@ def test_parse_arguments_as_json_string() -> None:
     call = parse_first_tool_call(text)
     assert call is not None
     assert call.arguments == {"company": "Globex"}
+    detailed = parse_first_tool_call_detailed(text)
+    assert detailed is not None
+    assert detailed.args_as_object is False
 
 
 def test_prompt_messages_drops_gold_assistant() -> None:

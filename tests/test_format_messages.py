@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 from tool_recovery_lora.data.schema import Message, ToolCall, TraceExample
 from tool_recovery_lora.train.format_messages import (
     example_to_hf_messages,
@@ -11,7 +9,7 @@ from tool_recovery_lora.train.format_messages import (
 )
 
 
-def test_message_to_hf_tool_call_arguments_are_json_string() -> None:
+def test_message_to_hf_tool_call_arguments_are_object() -> None:
     message = Message(
         role="assistant",
         tool_calls=[ToolCall(name="meeting_prep", arguments={"company": "Acme"})],
@@ -20,9 +18,8 @@ def test_message_to_hf_tool_call_arguments_are_json_string() -> None:
     assert payload["role"] == "assistant"
     assert payload["tool_calls"][0]["type"] == "function"
     assert payload["tool_calls"][0]["function"]["name"] == "meeting_prep"
-    assert json.loads(payload["tool_calls"][0]["function"]["arguments"]) == {
-        "company": "Acme"
-    }
+    assert payload["tool_calls"][0]["function"]["arguments"] == {"company": "Acme"}
+    assert isinstance(payload["tool_calls"][0]["function"]["arguments"], dict)
 
 
 def test_example_to_hf_messages_preserves_recovery_arc() -> None:
@@ -51,3 +48,7 @@ def test_example_to_hf_messages_preserves_recovery_arc() -> None:
     assert len(messages) == 5
     assert messages[2]["content"].startswith("{")
     assert messages[-1]["tool_calls"][0]["function"]["name"] == "meeting_prep"
+    assert isinstance(
+        messages[-1]["tool_calls"][0]["function"]["arguments"],
+        dict,
+    )

@@ -6,6 +6,7 @@ from tool_recovery_lora.eval.metrics import (
 )
 from tool_recovery_lora.eval.parse import (
     parse_first_tool_call,
+    parse_first_tool_call_detailed,
     parse_tool_calls_from_text,
 )
 from tool_recovery_lora.eval.prompt import gold_assistant_index, prompt_messages
@@ -16,6 +17,7 @@ __all__ = [
     "extract_last_assistant_tool_call",
     "gold_assistant_index",
     "parse_first_tool_call",
+    "parse_first_tool_call_detailed",
     "parse_tool_calls_from_text",
     "prompt_messages",
     "run_smoke_eval",

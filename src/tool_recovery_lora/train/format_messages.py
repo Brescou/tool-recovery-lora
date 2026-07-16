@@ -2,20 +2,24 @@
 
 from __future__ import annotations
 
-import json
 from typing import Any
 
 from tool_recovery_lora.data.schema import Message, ToolCall, TraceExample
 
 
 def _tool_call_to_hf(tool_call: ToolCall, call_id: str) -> dict[str, Any]:
-    """Map our ToolCall to HuggingFace/OpenAI-style tool_call dict."""
+    """Map our ToolCall to HuggingFace/OpenAI-style tool_call dict.
+
+    ``arguments`` must be a JSON **object** (dict). The Qwen chat template
+    applies ``tojson``; passing a string would double-encode and teach the
+    model to emit ``"arguments": "{...}"`` instead of ``"arguments": {...}``.
+    """
     return {
         "id": call_id,
         "type": "function",
         "function": {
             "name": tool_call.name,
-            "arguments": json.dumps(tool_call.arguments, ensure_ascii=False),
+            "arguments": tool_call.arguments,
         },
     }
 

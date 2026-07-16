@@ -51,3 +51,21 @@ def test_split_rejects_oversized_holds() -> None:
     examples = generate_examples(10, seed=2)
     with pytest.raises(ValueError, match="n_eval \\+ n_val"):
         split_train_val_eval(examples, n_eval=6, n_val=5, seed=2)
+
+
+def test_nonempty_context_is_surfaced_in_user_turn() -> None:
+    examples = generate_examples(80, seed=3, correct_ratio=0.6)
+    with_context = [
+        ex
+        for ex in examples
+        if (ex.meta or {})
+        .get("expected_tool_call", {})
+        .get("arguments", {})
+        .get("context")
+    ]
+    assert with_context, "expected some examples with context"
+    for example in with_context:
+        user = next(m for m in example.messages if m.role == "user")
+        context = example.meta["expected_tool_call"]["arguments"]["context"]
+        assert "Context:" in (user.content or "")
+        assert context in (user.content or "")

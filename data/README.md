@@ -45,6 +45,10 @@ make dataset
 
 Source: deterministic synthetic generator (`tool_recovery_lora.data.generate`) grounded in
 `MeetingPrepInput` from `langgraph-agent-stack` (`company`, `person`, `meeting_goal`, `context`).
+Non-empty `context` is always surfaced in the user turn. Training conversion passes
+`arguments` as a JSON **object** (not a string) so the Qwen chat template does not
+double-encode (see `docs/notes/t2-template-args-object.md`).
+
 Live stack export can replace/augment `data/raw/` later.
 
 ## Directories

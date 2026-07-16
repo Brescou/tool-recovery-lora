@@ -12,7 +12,7 @@ from tool_recovery_lora.eval.infer import (
     load_infer_model,
 )
 from tool_recovery_lora.eval.metrics import score_tool_call
-from tool_recovery_lora.eval.parse import parse_first_tool_call
+from tool_recovery_lora.eval.parse import parse_first_tool_call_detailed
 from tool_recovery_lora.eval.runner import expected_tool_call
 
 
@@ -69,6 +69,7 @@ def run_live_eval(
         "args_json_valid": 0,
         "args_exact": 0,
         "core_args_exact": 0,
+        "args_as_object": 0,
         "recovery_exact": 0,
         "recovery_core_exact": 0,
         "n_recovery": 0,
@@ -85,7 +86,9 @@ def run_live_eval(
             max_new_tokens=max_new_tokens,
         )
         latencies.append(latency_ms)
-        predicted = parse_first_tool_call(text)
+        parsed = parse_first_tool_call_detailed(text)
+        predicted = parsed.call if parsed is not None else None
+        args_as_object = bool(parsed.args_as_object) if parsed is not None else False
         if predicted is None and "<tool_call>" in text:
             scores = {
                 "name_match": False,
@@ -103,6 +106,7 @@ def run_live_eval(
             "core_args_exact",
         ):
             totals[key] += int(scores[key])
+        totals["args_as_object"] += int(args_as_object)
         if example.kind == "recovery":
             totals["n_recovery"] += 1
             totals["recovery_exact"] += int(scores["args_exact"])
@@ -114,6 +118,7 @@ def run_live_eval(
                 "kind": example.kind,
                 "latency_ms": round(latency_ms, 1),
                 "scores": scores,
+                "args_as_object": args_as_object,
                 "expected": expected.model_dump(),
                 "predicted": predicted.model_dump() if predicted else None,
                 "generation_preview": text[:400],
@@ -128,6 +133,7 @@ def run_live_eval(
         "args_json_valid": totals["args_json_valid"] / n_examples,
         "args_exact": totals["args_exact"] / n_examples,
         "core_args_exact": totals["core_args_exact"] / n_examples,
+        "args_as_object_rate": totals["args_as_object"] / n_examples,
         "recovery_exact": totals["recovery_exact"] / n_recovery,
         "recovery_core_exact": totals["recovery_core_exact"] / n_recovery,
         "n_recovery": float(totals["n_recovery"]),
