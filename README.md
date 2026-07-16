@@ -17,13 +17,14 @@ Learning-first project: close the PyTorch / fine-tuning gap while staying in age
 ## Quick start
 
 ```bash
-uv sync --extra dev --extra train
+uv sync --extra dev --extra train --extra bakeoff
 make test
-make dataset   # regenerate train/val/smoke JSONL
-make eval      # fixture self-check
-make eval-live # LoRA generation on smoke set (GPU)
-make train     # Unsloth QLoRA on RTX 3080
-make demo      # LangGraph recovery demo (GPU)
+make dataset
+make eval
+make eval-live
+make train
+make demo
+make bakeoff   # needs real ANTHROPIC_API_KEY for Claude arm
 ```
 
 ## Layout
@@ -49,8 +50,8 @@ docs/                     # design + plans + export contract
 1. Curated curriculum dataset ← done  
 2. First Unsloth QLoRA run ← done ([notes](docs/notes/phase2-train.md))  
 3. Objective eval iteration (live model) ← done ([notes](docs/notes/phase3-live-eval.md))  
-4. LangGraph recovery demo ← **done** ([notes](docs/notes/phase4-demo.md))  
-5. Optional Claude/GPT bake-off  
+4. LangGraph recovery demo ← done ([notes](docs/notes/phase4-demo.md))  
+5. Bake-off harness ← **done** (Claude pending real API key — [notes](docs/notes/phase5-bakeoff.md))  
 
 ## License
 

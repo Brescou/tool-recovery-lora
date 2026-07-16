@@ -5,7 +5,7 @@ PYTHON := uv run python
 
 # ─── Phony Targets ───────────────────────────────────────────────────────────
 
-.PHONY: help install test eval eval-live train dataset demo lint format clean
+.PHONY: help install test eval eval-live train dataset demo bakeoff lint format clean
 
 .DEFAULT_GOAL := help
 
@@ -30,6 +30,9 @@ eval-live: ## Live LoRA generation eval on smoke set (GPU + train extra)
 
 demo: ## LangGraph recovery demo (GPU + trained adapter)
 	$(UV) run python scripts/run_demo.py --scenario missing_args
+
+bakeoff: ## LoRA vs Claude bake-off on smoke set (GPU + Anthropic key)
+	$(UV) run python scripts/run_bakeoff.py --out-dir data/eval/bakeoff
 
 train: ## Run training stub (requires train extra + GPU for real runs)
 	$(UV) run python scripts/run_train.py

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="420" viewBox="0 0 720 420">
+<rect width="100%" height="100%" fill="#0b0f14"/>
+<text x="60" y="32" fill="#e5e7eb" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600">
+Tool-call core accuracy vs cost / request
+</text>
+<line x1="60" y1="60" x2="60" y2="360" stroke="#374151" />
+<line x1="60" y1="360" x2="660" y2="360" stroke="#374151" />
+<text x="16" y="210" fill="#9ca3af" font-size="12" transform="rotate(-90 16,210)">core_args_exact</text>
+<text x="360" y="404" fill="#9ca3af" font-size="12" text-anchor="middle">USD / request</text>
+<circle cx="60" cy="60" r="10" fill="#5eead4" />
+<text x="74" y="64" fill="#e5e7eb" font-family="IBM Plex Sans, sans-serif" font-size="14">
+LoRA Qwen2.5-3B (100% @ $0.0000)
+</text>
+<text x="74" y="100" fill="#9ca3af" font-family="IBM Plex Sans, sans-serif" font-size="13">
+Claude: set a real ANTHROPIC_API_KEY then re-run make bakeoff
+</text>
+</svg>

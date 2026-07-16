@@ -30,6 +30,9 @@ train = [
     "bitsandbytes",
     "langgraph>=0.2",
 ]
+bakeoff = [
+    "anthropic>=0.40",
+]
 
 [project.urls]
 Repository = "https://github.com/Brescou/tool-recovery-lora"
