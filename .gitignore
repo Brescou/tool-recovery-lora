@@ -1,0 +1,40 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Training artifacts
+adapters/**
+!adapters/.gitkeep
+*.pt
+*.bin
+*.safetensors
+wandb/
+runs/
+outputs/
+
+# Raw trace dumps (can be large)
+data/raw/**
+!data/raw/.gitkeep
+
+# Env / IDE
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

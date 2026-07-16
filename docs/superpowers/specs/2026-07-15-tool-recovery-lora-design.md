@@ -174,8 +174,8 @@ Conventions: conventional commits, static typing, `make test`, Black-compatible 
 | Stack coupling drift | Keep export schema versioned; this repo owns validation |
 | Scope creep into bake-off | Phase 5 gate; v1 success = demo + learning |
 
-## Open items at scaffold time
+## Scaffold resolutions
 
-- Exact Qwen Hub model ID (pick stable Unsloth-supported Instruct 3–4B)
-- Trace JSON schema version string shared with stack export
-- Which pack is the first demo target
+- Base model: `unsloth/Qwen2.5-3B-Instruct`
+- Trace schema: `tool_recovery_trace_v1`
+- First demo pack: `meeting_prep`
