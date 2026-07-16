@@ -32,9 +32,20 @@ Traces use schema version **`tool_recovery_trace_v1`** (one JSON object per line
 
 | Split | Path | Size |
 |-------|------|------|
-| Train | `data/curated/train.jsonl` | ~700–1000 (~60% correct / ~40% recovery) |
-| Val | `data/curated/val.jsonl` | ~100–150 |
-| Smoke | `data/eval/smoke.jsonl` | ~50 (3 fixtures shipped in Phase 0) |
+| Train | `data/curated/train.jsonl` | ~930 (default generator) |
+| Val | `data/curated/val.jsonl` | ~120 |
+| Smoke | `data/eval/smoke.jsonl` | ~50 |
+
+Regenerate with:
+
+```bash
+make dataset
+# or: uv run python scripts/generate_dataset.py --n-total 1100 --n-val 120 --n-eval 50 --seed 42
+```
+
+Source: deterministic synthetic generator (`tool_recovery_lora.data.generate`) grounded in
+`MeetingPrepInput` from `langgraph-agent-stack` (`company`, `person`, `meeting_goal`, `context`).
+Live stack export can replace/augment `data/raw/` later.
 
 ## Directories
 

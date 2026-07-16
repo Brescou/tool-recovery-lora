@@ -5,7 +5,7 @@ PYTHON := uv run python
 
 # ─── Phony Targets ───────────────────────────────────────────────────────────
 
-.PHONY: help install test eval train lint format clean
+.PHONY: help install test eval train dataset lint format clean
 
 .DEFAULT_GOAL := help
 
@@ -27,6 +27,9 @@ eval: ## Run objective smoke eval on data/eval/smoke.jsonl
 
 train: ## Run training stub (requires train extra + GPU for real runs)
 	$(UV) run python scripts/run_train.py
+
+dataset: ## Generate curated train/val + smoke eval JSONL
+	$(UV) run python scripts/generate_dataset.py
 
 lint: ## Lint with ruff
 	$(UV) run ruff check .

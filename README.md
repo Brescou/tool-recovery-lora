@@ -19,6 +19,7 @@ Learning-first project: close the PyTorch / fine-tuning gap while staying in age
 ```bash
 uv sync --extra dev
 make test
+make dataset   # regenerate train/val/smoke JSONL
 make eval
 make train   # Phase 0 stub — prints config only
 ```
