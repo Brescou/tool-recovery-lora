@@ -40,7 +40,32 @@ def test_score_tool_call_exact_match() -> None:
         "name_match": True,
         "args_json_valid": True,
         "args_exact": True,
+        "core_args_exact": True,
     }
+
+
+def test_score_tool_call_core_ignores_context_mismatch() -> None:
+    expected = ToolCall(
+        name="meeting_prep",
+        arguments={
+            "company": "Acme",
+            "person": "Jane",
+            "meeting_goal": "discovery",
+            "context": "A",
+        },
+    )
+    predicted = ToolCall(
+        name="meeting_prep",
+        arguments={
+            "company": "Acme",
+            "person": "Jane",
+            "meeting_goal": "discovery",
+            "context": "B",
+        },
+    )
+    scores = score_tool_call(predicted, expected)
+    assert scores["args_exact"] is False
+    assert scores["core_args_exact"] is True
 
 
 def test_score_tool_call_missing_prediction() -> None:
@@ -48,6 +73,7 @@ def test_score_tool_call_missing_prediction() -> None:
     scores = score_tool_call(None, expected)
     assert scores["name_match"] is False
     assert scores["args_exact"] is False
+    assert scores["core_args_exact"] is False
 
 
 def test_run_smoke_eval_perfect_on_fixtures() -> None:

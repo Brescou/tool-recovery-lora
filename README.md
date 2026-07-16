@@ -20,7 +20,8 @@ Learning-first project: close the PyTorch / fine-tuning gap while staying in age
 uv sync --extra dev --extra train
 make test
 make dataset   # regenerate train/val/smoke JSONL
-make eval
+make eval      # fixture self-check
+make eval-live # LoRA generation on smoke set (GPU)
 make train     # Unsloth QLoRA on RTX 3080
 ```
 
@@ -45,8 +46,8 @@ docs/                     # design + plans + export contract
 
 0. Scaffold ← done  
 1. Curated curriculum dataset ← done  
-2. First Unsloth QLoRA run ← **done** (see [docs/notes/phase2-train.md](docs/notes/phase2-train.md))  
-3. Objective eval iteration (live model)  
+2. First Unsloth QLoRA run ← done ([notes](docs/notes/phase2-train.md))  
+3. Objective eval iteration (live model) ← **done** ([notes](docs/notes/phase3-live-eval.md))  
 4. LangGraph recovery demo  
 5. Optional Claude/GPT bake-off  
 

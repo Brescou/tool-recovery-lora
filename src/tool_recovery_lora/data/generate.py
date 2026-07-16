@@ -148,7 +148,8 @@ def _user_text(rng: random.Random, scenario: Scenario) -> str:
         person=scenario.person,
         goal=scenario.meeting_goal,
     )
-    if scenario.context and rng.random() < 0.5:
+    # Always surface non-empty context in the user turn so labels are learnable.
+    if scenario.context:
         text = f"{text} Context: {scenario.context}"
     return text
 

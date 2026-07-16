@@ -24,9 +24,8 @@ runs/
 outputs/
 unsloth_compiled_cache/
 
-# Raw trace dumps (can be large)
-data/raw/**
-!data/raw/.gitkeep
+# Eval artifacts
+data/eval/live_results.json
 
 # Env / IDE
 .env

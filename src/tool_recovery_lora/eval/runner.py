@@ -12,7 +12,7 @@ from tool_recovery_lora.eval.metrics import (
 )
 
 
-def _expected_tool_call(example: TraceExample) -> ToolCall:
+def expected_tool_call(example: TraceExample) -> ToolCall:
     """Read ``meta['expected_tool_call']`` or fall back to last assistant call."""
     if example.meta and "expected_tool_call" in example.meta:
         return ToolCall.model_validate(example.meta["expected_tool_call"])
@@ -26,7 +26,7 @@ def _expected_tool_call(example: TraceExample) -> ToolCall:
 
 
 def run_smoke_eval(path: Path) -> dict[str, float]:
-    """Score fixtures for self-consistency (Phase 0; no live model).
+    """Score fixtures for self-consistency (no live model).
 
     Each example's last assistant tool call is compared to
     ``meta['expected_tool_call']``.
@@ -44,7 +44,7 @@ def run_smoke_eval(path: Path) -> dict[str, float]:
 
     totals = {"name_match": 0, "args_json_valid": 0, "args_exact": 0}
     for example in examples:
-        expected = _expected_tool_call(example)
+        expected = expected_tool_call(example)
         predicted = extract_last_assistant_tool_call(example.messages)
         scores = score_tool_call(predicted, expected)
         for key in totals:

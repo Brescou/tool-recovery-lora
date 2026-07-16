@@ -1,0 +1,87 @@
+"""Load fine-tuned Unsloth model and generate tool-call completions."""
+
+from __future__ import annotations
+
+import time
+from pathlib import Path
+from typing import Any
+
+from tool_recovery_lora.data.schema import TraceExample
+from tool_recovery_lora.eval.prompt import prompt_hf_messages
+
+
+def load_infer_model(
+    adapter_dir: Path,
+    *,
+    max_seq_length: int = 1024,
+) -> tuple[Any, Any]:
+    """Load 4-bit base + LoRA adapter for inference.
+
+    Args:
+        adapter_dir: Directory produced by ``make train``.
+        max_seq_length: Context length.
+
+    Returns:
+        ``(model, tokenizer)`` ready for generation.
+    """
+    try:
+        from unsloth import FastLanguageModel
+    except ImportError as exc:
+        raise ImportError(
+            "Train/infer deps missing. Install with: uv sync --extra train"
+        ) from exc
+
+    if not adapter_dir.is_dir():
+        raise FileNotFoundError(adapter_dir)
+
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model_name=str(adapter_dir),
+        max_seq_length=max_seq_length,
+        dtype=None,
+        load_in_4bit=True,
+    )
+    FastLanguageModel.for_inference(model)
+    return model, tokenizer
+
+
+def generate_completion(
+    model: Any,
+    tokenizer: Any,
+    example: TraceExample,
+    *,
+    max_new_tokens: int = 256,
+) -> tuple[str, float]:
+    """Generate an assistant continuation for one eval example.
+
+    Args:
+        model: Unsloth/PEFT model in inference mode.
+        tokenizer: Matching tokenizer.
+        example: Trace to evaluate.
+        max_new_tokens: Generation budget.
+
+    Returns:
+        ``(decoded_new_text, latency_ms)``.
+    """
+    messages = prompt_hf_messages(example)
+    prompt = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+    inputs = tokenizer(prompt, return_tensors="pt")
+    inputs = {key: value.to(model.device) for key, value in inputs.items()}
+
+    start = time.perf_counter()
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=max_new_tokens,
+        use_cache=True,
+        do_sample=False,
+        pad_token_id=tokenizer.pad_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+    )
+    latency_ms = (time.perf_counter() - start) * 1000.0
+
+    new_tokens = outputs[0][inputs["input_ids"].shape[-1] :]
+    text = tokenizer.decode(new_tokens, skip_special_tokens=False)
+    return text, latency_ms
